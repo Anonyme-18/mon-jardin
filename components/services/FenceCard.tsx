@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Sun, Ruler, User } from "lucide-react";
+import { MapPin, Sun, Ruler, User, Images } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/button";
 import { ContentImage } from "@/components/ui/ContentImage";
@@ -16,6 +16,7 @@ interface FenceCardProps {
 
 export function FenceCard({ listing, onReserve }: FenceCardProps) {
   const imageSrc = getFenceListingImage(listing);
+  const photoCount = listing.photos?.length ?? 0;
 
   return (
     <article
@@ -26,13 +27,21 @@ export function FenceCard({ listing, onReserve }: FenceCardProps) {
           : "opacity-60"
       )}
     >
-      <ContentImage
-        src={imageSrc}
-        alt={`${listing.wallType} — ${listing.neighborhood}, Lomé`}
-        aspect="video"
-        className="rounded-t-xl"
-        sizes="(max-width: 768px) 100vw, 50vw"
-      />
+      <div className="relative">
+        <ContentImage
+          src={imageSrc}
+          alt={`${listing.wallType} — ${listing.neighborhood}, Lomé`}
+          aspect="video"
+          className="rounded-t-xl"
+          sizes="(max-width: 768px) 100vw, 50vw"
+        />
+        {photoCount > 0 && (
+          <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-forest-dark/85 px-2 py-1 text-[10px] font-medium text-white">
+            <Images className="h-3 w-3" />
+            {photoCount} photo{photoCount > 1 ? "s" : ""}
+          </span>
+        )}
+      </div>
 
       <div className="p-6">
         <div className="mb-4 flex items-start justify-between gap-3">

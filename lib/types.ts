@@ -19,6 +19,7 @@ export interface Kit {
 export interface FenceListing {
   id: string;
   ownerName: string;
+  phone?: string;
   neighborhood: string;
   surfaceM2: number;
   wallType: "Mur briques" | "Clôture tôle" | "Mur parpaing" | "Grillage";
@@ -26,6 +27,8 @@ export interface FenceListing {
   pricePerMonth: number;
   description: string;
   available: boolean;
+  /** Photos du mur (base64 ou URL) — stockées en localStorage pour les annonces utilisateur */
+  photos?: string[];
 }
 
 export interface Testimonial {

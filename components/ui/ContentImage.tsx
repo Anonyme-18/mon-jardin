@@ -30,6 +30,8 @@ export function ContentImage({
     className
   );
 
+  const isDataUrl = src.startsWith("data:") || src.startsWith("blob:");
+
   if (aspect === "auto") {
     return (
       <Image
@@ -38,6 +40,7 @@ export function ContentImage({
         width={1200}
         height={800}
         priority={priority}
+        unoptimized={isDataUrl}
         className={cn("h-auto w-full object-cover warm-image", className)}
         sizes={sizes}
       />
@@ -51,6 +54,7 @@ export function ContentImage({
         alt={alt}
         fill
         priority={priority}
+        unoptimized={isDataUrl}
         className="object-cover warm-image"
         sizes={sizes}
       />

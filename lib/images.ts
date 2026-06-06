@@ -55,9 +55,15 @@ const fenceImagePools: Record<FenceListing["wallType"], string[]> = {
 };
 
 export function getFenceListingImage(listing: FenceListing): string {
+  if (listing.photos?.length) return listing.photos[0];
   const pool = fenceImagePools[listing.wallType];
   const numericId = parseInt(listing.id.replace(/\D/g, ""), 10) || 0;
   return pool[numericId % pool.length];
+}
+
+export function getFenceListingImages(listing: FenceListing): string[] {
+  if (listing.photos?.length) return listing.photos;
+  return [getFenceListingImage(listing)];
 }
 
 export function isRemoteImage(src: string): boolean {

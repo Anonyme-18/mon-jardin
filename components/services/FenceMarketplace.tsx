@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FenceCard } from "./FenceCard";
-import { FenceListingForm } from "./FenceListingForm";
+import {
+  FenceListingPipeline,
+  type FenceListingDraft,
+} from "./FenceListingPipeline";
 import { useToast } from "@/components/ui/use-toast";
 import {
   loadFenceListings,
@@ -44,9 +47,7 @@ export function FenceMarketplace() {
     });
   };
 
-  const handleNewListing = (
-    data: Omit<FenceListing, "id" | "available">
-  ) => {
+  const handleNewListing = (data: FenceListingDraft) => {
     const listing: FenceListing = {
       ...data,
       id: `cl-${Date.now()}`,
@@ -57,7 +58,7 @@ export function FenceMarketplace() {
     setTab("browse");
     toast({
       title: "Annonce publiée",
-      description: "Votre clôture est visible sur la plateforme Mon Jardin.",
+      description: "Votre mur est visible avec vos photos sur Mon Jardin.",
     });
   };
 
@@ -87,7 +88,7 @@ export function FenceMarketplace() {
                 : "text-forest hover:bg-sage"
             )}
           >
-            Louer ma clôture
+            Louer mon mur
           </button>
         </div>
 
@@ -140,17 +141,17 @@ export function FenceMarketplace() {
       )}
 
       {tab === "offer" && (
-        <div className="rounded-xl border border-sage-border bg-white p-8 ring-1 ring-sage-border">
+        <div className="rounded-xl border border-sage-border bg-white p-6 ring-1 ring-sage-border sm:p-8">
           <h2 className="font-display text-2xl font-semibold text-forest-dark">
-            Proposer votre mur ou clôture
+            Mettre mon mur en location
           </h2>
-          <p className="mt-2 text-forest/70">
-            Vous avez un mur ou une clôture inutilisé ? Louez-le à un cultivateur
-            qui souhaite installer un kit Mon Jardin. Mon Jardin prend 10 % de
-            commission — le reste vous revient.
+          <p className="mt-2 max-w-2xl text-forest/70">
+            Parcours en 5 étapes : profil, caractéristiques du mur, photos
+            (galerie ou appareil photo), tarif, puis publication. Mon Jardin
+            prend 10&nbsp;% de commission — le reste vous revient.
           </p>
           <div className="mt-8">
-            <FenceListingForm onSubmit={handleNewListing} />
+            <FenceListingPipeline onSubmit={handleNewListing} />
           </div>
         </div>
       )}
