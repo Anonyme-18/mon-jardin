@@ -6,12 +6,13 @@ import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/Badge";
+import { siteImages } from "@/lib/images";
 
 export function HeroSection() {
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <Image
-        src="/img/image2.jpeg"
+        src={siteImages.hero}
         alt="Dispositif d'agriculture verticale Mon Jardin en bambou"
         fill
         priority

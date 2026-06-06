@@ -14,6 +14,8 @@ import {
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Button } from "@/components/ui/button";
 import { howItWorksSteps } from "@/lib/data";
+import { siteImages } from "@/lib/images";
+import { ContentImage } from "@/components/ui/ContentImage";
 import { PrototypeVirtuel3D } from "@/components/prototype/PrototypeVirtuel3D";
 
 const iconMap = {
@@ -29,18 +31,24 @@ const principles = [
     title: "Hydroponie périmétrique",
     description:
       "L'eau circule par gravité dans des gouttières en bambou. Pas de pompe, pas d'électricité.",
+    image: siteImages.irrigation,
+    imageAlt: "Irrigation goutte-à-goutte sur plants",
   },
   {
     icon: Sun,
     title: "Lumière naturelle",
     description:
       "Votre dispositif capte le soleil de Lomé. Mise en production : 45 à 60 jours.",
+    image: siteImages.installationLome,
+    imageAlt: "Dispositif vertical Mon Jardin à Lomé — Église Saint-Pierre & Paul",
   },
   {
     icon: Recycle,
     title: "Compost organique",
     description:
       "Terreau enrichi localement. Recharge disponible sous 48h à Lomé pour 5 000 FCFA.",
+    image: siteImages.compost,
+    imageAlt: "Compost et terreau pour recharge de culture",
   },
 ];
 
@@ -108,8 +116,15 @@ export default function CommentCaMarchePage() {
                   ease: "easeOut",
                   delay: index * 0.1,
                 }}
-                className="rounded-xl border border-sage-border bg-white p-8 ring-1 ring-sage-border"
+                className="overflow-hidden rounded-xl border border-sage-border bg-white ring-1 ring-sage-border"
               >
+                <ContentImage
+                  src={principle.image}
+                  alt={principle.imageAlt}
+                  aspect="video"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+                <div className="p-8">
                 <principle.icon className="mb-4 h-10 w-10 text-forest" />
                 <h3 className="font-display text-lg font-semibold text-forest-dark">
                   {principle.title}
@@ -117,6 +132,7 @@ export default function CommentCaMarchePage() {
                 <p className="mt-3 text-sm text-forest/70">
                   {principle.description}
                 </p>
+                </div>
               </motion.div>
             ))}
           </div>

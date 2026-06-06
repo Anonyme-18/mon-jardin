@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { ContentImage } from "@/components/ui/ContentImage";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/Badge";
 import { aboutFacts, teamMembers } from "@/lib/data";
+import { siteImages } from "@/lib/images";
 
 export default function AProposPage() {
   return (
@@ -43,13 +44,12 @@ export default function AProposPage() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-              className="relative aspect-[4/3] overflow-hidden rounded-xl ring-1 ring-sage-border"
             >
-              <Image
-                src="/img/image.jpeg"
-                alt="Installation professionnelle Mon Jardin sur terrain"
-                fill
-                className="object-cover warm-image"
+              <ContentImage
+                src={siteImages.about}
+                alt="Ferme verticale Mon Jardin sur 1 hectare — rangées parallèles et cuve centrale"
+                aspect="portrait"
+                className="rounded-xl ring-1 ring-sage-border"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </motion.div>

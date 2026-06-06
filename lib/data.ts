@@ -1,9 +1,7 @@
 import type { Kit, Stat, Testimonial } from "./types";
+import { siteImages, images } from "./images";
 
-export const images = {
-  dispositifMenage: "/img/image2.jpeg",
-  dispositifTerrain: "/img/image.jpeg",
-} as const;
+export { images };
 
 export const kits: Kit[] = [
   {
@@ -24,7 +22,7 @@ export const kits: Kit[] = [
     installation: "Incluse — Lomé",
     deliveryTime: "5–7 jours ouvrés",
     popular: false,
-    image: images.dispositifMenage,
+    image: siteImages.kitMenage,
     category: "kit",
   },
   {
@@ -45,7 +43,7 @@ export const kits: Kit[] = [
     installation: "Incluse + Formation équipe",
     deliveryTime: "7–10 jours ouvrés",
     popular: true,
-    image: images.dispositifTerrain,
+    image: siteImages.kitResto,
     category: "kit",
   },
   {
@@ -56,7 +54,7 @@ export const kits: Kit[] = [
     description:
       "2 visites/mois sur votre dispositif — compost organique, traitement bio",
     subscribeWith: ["kit-menage", "kit-resto"],
-    image: images.dispositifMenage,
+    image: siteImages.entretien,
     category: "service",
   },
   {
@@ -65,7 +63,7 @@ export const kits: Kit[] = [
     price: 5000,
     description: "Terreau enrichi + sacs de culture de rechange pour votre dispositif",
     delivery: "Sous 48h à Lomé",
-    image: images.dispositifMenage,
+    image: siteImages.recharge,
     category: "addon",
   },
   {
@@ -78,7 +76,7 @@ export const kits: Kit[] = [
     surface: "4–12 m² de mur ou clôture",
     installation: "Mise en relation via la plateforme",
     deliveryTime: "Disponibilité sous 48h",
-    image: images.dispositifMenage,
+    image: siteImages.clotureService,
     category: "service",
   },
 ];

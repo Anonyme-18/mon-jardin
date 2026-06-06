@@ -2,9 +2,10 @@
 
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import { siteImages } from "@/lib/images";
 
 export function PhotoBackdrop() {
-  const texture = useTexture("/img/image2.jpeg");
+  const texture = useTexture(siteImages.prototypeCourBackdrop);
   texture.colorSpace = THREE.SRGBColorSpace;
 
   return (
