@@ -95,8 +95,8 @@ export function GuidedTourRunner() {
   const progress = ((guidedTourStep + 1) / HOME_GUIDED_TOUR.length) * 100;
 
   return (
-    <div className="pointer-events-auto absolute left-1/2 top-20 z-10 w-[min(420px,calc(100%-2rem))] -translate-x-1/2">
-      <div className="rounded-2xl border border-sage-border bg-white/95 p-4 shadow-lg backdrop-blur-md">
+    <div className="w-full">
+      <div className="rounded-2xl border border-sage-border bg-white/95 p-4 shadow-sm">
         <div className="mb-2 flex items-start justify-between gap-2">
           <div>
             <p className="text-[10px] uppercase tracking-wide text-forest/50">
@@ -170,7 +170,7 @@ export function WeatherBadge() {
       type="button"
       onClick={toggleSeason}
       className={cn(
-        "pointer-events-auto rounded-xl px-3 py-2 text-left font-mono text-xs shadow-sm backdrop-blur-md transition-colors",
+        "w-full rounded-xl px-3 py-2 text-left font-mono text-xs shadow-sm transition-colors",
         isDry
           ? "border border-amber/40 bg-amber/15 text-amber-dark"
           : "border border-sky-300/50 bg-sky-100/80 text-sky-900"
@@ -218,15 +218,15 @@ export function SensorAlertsPanel() {
   if (alerts.length === 0) return null;
 
   return (
-    <div className="pointer-events-none flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       {alerts.map((alert, i) => (
         <div
           key={i}
           className={cn(
-            "rounded-lg px-3 py-2 font-mono text-xs shadow-md backdrop-blur-sm",
+            "rounded-lg px-3 py-2 font-mono text-xs",
             alert.level === "warning"
-              ? "border border-amber/50 bg-amber/90 text-amber-dark"
-              : "border border-sky-200 bg-white/90 text-forest"
+              ? "border border-amber/50 bg-amber/20 text-amber-dark"
+              : "border border-sky-200 bg-sky-50 text-forest"
           )}
         >
           {alert.message}

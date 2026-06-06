@@ -13,7 +13,7 @@ export function DayProgress() {
   const phaseLabel = getPhaseLabel(progress / 100);
 
   return (
-    <div className="w-full px-4">
+    <div className="w-full">
       <div className="mb-1 flex justify-between text-xs text-forest/70">
         <span>
           Jour {currentDay} / {cycleDays} jours

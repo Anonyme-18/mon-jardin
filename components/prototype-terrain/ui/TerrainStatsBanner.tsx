@@ -16,7 +16,7 @@ export function TerrainStatsBanner() {
   } = useTerrainMetrics();
 
   return (
-    <div className="pointer-events-none rounded-xl border border-sage-border bg-forest-dark/90 px-4 py-2 font-mono text-xs text-white shadow-lg backdrop-blur-sm">
+    <div className="rounded-xl border border-sage-border bg-forest-dark px-4 py-3 font-mono text-xs text-white">
       <p className="font-bold">
         {totalUnits.toLocaleString("fr-FR")} kits · ~{annualYieldKg.toLocaleString("fr-FR")} kg/an · 0 pompe électrique
       </p>
@@ -44,8 +44,8 @@ export function GreenhouseEffectBadge() {
     <div
       className={
         showSensors
-          ? "pointer-events-none rounded-lg border border-emerald-300/60 bg-emerald-500/90 px-3 py-1.5 font-mono text-[10px] text-white shadow-md backdrop-blur-sm"
-          : "pointer-events-none rounded-lg border border-white/30 bg-white/80 px-3 py-1.5 font-mono text-[10px] text-forest shadow-md backdrop-blur-sm"
+          ? "rounded-lg border border-emerald-300/60 bg-emerald-500/15 px-3 py-2 font-mono text-[10px] text-emerald-900"
+          : "rounded-lg border border-sage-border bg-sage/40 px-3 py-2 font-mono text-[10px] text-forest"
       }
     >
       {showSensors

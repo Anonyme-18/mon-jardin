@@ -41,68 +41,73 @@ export function PrototypeVirtuel3D() {
     isWatering || showSensors || hovering || guidedTourActive;
 
   return (
-    <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-sage-border ring-1 ring-sage-border">
-      <div
-        className="relative h-[560px] w-full"
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      >
-        <Canvas
-          shadows
-          dpr={[1, 1.5]}
-          camera={{ fov: 50, position: [8, 4, 8] }}
-          frameloop={alwaysRender ? "always" : "demand"}
-          gl={{ antialias: true }}
-          onCreated={({ gl }) => {
-            gl.shadowMap.enabled = true;
-            gl.shadowMap.type = THREE.PCFSoftShadowMap;
-          }}
+    <div className="mx-auto max-w-7xl">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+        {/* Vue 3D — sans overlay UI */}
+        <div
+          className="relative h-[480px] overflow-hidden rounded-2xl border border-sage-border bg-cream ring-1 ring-sage-border sm:h-[540px] lg:h-[620px]"
+          onMouseEnter={() => setHovering(true)}
+          onMouseLeave={() => setHovering(false)}
         >
-          <Suspense fallback={null}>
-            <Scene3D />
-          </Suspense>
-        </Canvas>
+          <Canvas
+            shadows
+            dpr={[1, 1.5]}
+            camera={{ fov: 50, position: [8, 4, 8] }}
+            frameloop={alwaysRender ? "always" : "demand"}
+            gl={{ antialias: true }}
+            className="!h-full !w-full"
+            style={{ height: "100%", width: "100%" }}
+            onCreated={({ gl }) => {
+              gl.shadowMap.enabled = true;
+              gl.shadowMap.type = THREE.PCFSoftShadowMap;
+            }}
+          >
+            <Suspense fallback={null}>
+              <Scene3D />
+            </Suspense>
+          </Canvas>
+        </div>
 
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
-              <div className="rounded-xl bg-forest px-4 py-2 text-white shadow-sm">
-                <p className="font-display text-sm font-semibold">
-                  Mon Jardin — Prototype virtuel 3D
-                </p>
-              </div>
-              <Badge variant="amber">Simulation en direct</Badge>
-              <WeatherBadge />
+        {/* Panneau latéral — données & contrôles */}
+        <aside className="flex flex-col gap-3 lg:max-h-[620px] lg:overflow-y-auto lg:pr-1">
+          <div className="rounded-2xl border border-sage-border bg-white/80 p-4 backdrop-blur-md">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <h2 className="font-display text-sm font-semibold text-forest-dark">
+                Prototype cour
+              </h2>
+              <Badge variant="amber">Simulation</Badge>
             </div>
-
-            <div className="absolute right-4 top-4 flex flex-col items-end gap-2 pointer-events-none">
-              <MetricsHUD />
-              <SensorAlertsPanel />
-            </div>
-
-            <GuidedTourRunner />
-
-            <div className="absolute bottom-36 left-4 max-w-xs">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={logMessage}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="rounded-xl bg-forest-dark/80 px-4 py-2 font-mono text-xs text-sage-muted backdrop-blur-sm"
-                >
-                  {logMessage}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            <div className="absolute bottom-0 left-0 right-0 space-y-3 p-4 pointer-events-auto">
-              <DayProgress />
-              <SimControls />
-            </div>
+            <p className="mb-3 text-xs text-forest/60">
+              Glisser pour tourner · molette pour zoomer
+            </p>
+            <MetricsHUD />
           </div>
-        </Suspense>
+
+          <WeatherBadge />
+
+          <SensorAlertsPanel />
+
+          <GuidedTourRunner />
+
+          <div className="rounded-2xl border border-sage-border bg-white/80 p-4 backdrop-blur-md">
+            <DayProgress />
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={logMessage}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="rounded-xl border border-sage-border bg-forest-dark/90 px-4 py-3 font-mono text-xs text-sage-muted"
+            >
+              {logMessage}
+            </motion.div>
+          </AnimatePresence>
+
+          <SimControls className="mt-auto" />
+        </aside>
       </div>
     </div>
   );

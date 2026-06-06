@@ -46,71 +46,77 @@ export function PrototypeTerrainHectare3D() {
     hovering;
 
   return (
-    <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-sage-border ring-1 ring-sage-border">
-      <div
-        className="relative h-[620px] w-full"
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      >
-        <Canvas
-          shadows
-          dpr={[1, 1.5]}
-          camera={{ fov: 45, position: [120, 90, 120], near: 0.1, far: 500 }}
-          frameloop={alwaysRender ? "always" : "demand"}
-          gl={{ antialias: true }}
-          onCreated={({ gl }) => {
-            gl.shadowMap.enabled = true;
-            gl.shadowMap.type = THREE.PCFSoftShadowMap;
-          }}
+    <div className="mx-auto max-w-7xl">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+        {/* Vue 3D — sans overlay UI */}
+        <div
+          className="relative h-[480px] overflow-hidden rounded-2xl border border-sage-border bg-cream ring-1 ring-sage-border sm:h-[540px] lg:h-[620px]"
+          onMouseEnter={() => setHovering(true)}
+          onMouseLeave={() => setHovering(false)}
         >
-          <Suspense fallback={null}>
-            <SceneTerrain3D />
-          </Suspense>
-        </Canvas>
+          <Canvas
+            shadows
+            dpr={[1, 1.5]}
+            camera={{ fov: 45, position: [120, 90, 120], near: 0.1, far: 500 }}
+            frameloop={alwaysRender ? "always" : "demand"}
+            gl={{ antialias: true }}
+            className="!h-full !w-full"
+            style={{ height: "100%", width: "100%" }}
+            onCreated={({ gl }) => {
+              gl.shadowMap.enabled = true;
+              gl.shadowMap.type = THREE.PCFSoftShadowMap;
+            }}
+          >
+            <Suspense fallback={null}>
+              <SceneTerrain3D />
+            </Suspense>
+          </Canvas>
+        </div>
 
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
-            <div className="rounded-xl bg-forest px-4 py-2 text-white shadow-sm">
-              <p className="font-display text-sm font-semibold">
-                Mon Jardin — Terrain 1 hectare
-              </p>
+        {/* Panneau latéral — données & contrôles */}
+        <aside className="flex flex-col gap-3 lg:max-h-[620px] lg:overflow-y-auto lg:pr-1">
+          <div className="rounded-2xl border border-sage-border bg-white/80 p-4 backdrop-blur-md">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <h2 className="font-display text-sm font-semibold text-forest-dark">
+                Terrain 1 hectare
+              </h2>
+              <Badge variant="amber">
+                {droneMode ? "Mode drone" : "Vue aérienne"}
+              </Badge>
             </div>
-            <Badge variant="amber">
-              {droneMode ? "Mode drone" : "Vue aérienne 3D"}
-            </Badge>
-            <GreenhouseEffectBadge />
-          </div>
-
-          <div className="absolute left-1/2 top-4 -translate-x-1/2">
+            <p className="mb-3 text-xs text-forest/60">
+              Glisser pour tourner · molette pour zoomer
+            </p>
             <TerrainStatsBanner />
+            <div className="mt-3">
+              <GreenhouseEffectBadge />
+            </div>
           </div>
 
-          <div className="absolute right-4 top-4 max-w-[220px]">
+          <div className="rounded-2xl border border-sage-border bg-white/80 p-4 backdrop-blur-md">
             <TerrainMetricsHUD />
           </div>
 
-          <div className="absolute bottom-24 left-4 max-w-sm">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={logMessage}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="rounded-xl bg-forest-dark/85 px-4 py-2 font-mono text-xs text-sage-muted backdrop-blur-sm"
-              >
-                {logMessage}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={logMessage}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="rounded-xl border border-sage-border bg-forest-dark/90 px-4 py-3 font-mono text-xs text-sage-muted"
+            >
+              {logMessage}
+            </motion.div>
+          </AnimatePresence>
 
-          <div className="pointer-events-auto absolute bottom-0 left-0 right-0 p-4">
+          <div className="rounded-2xl border border-sage-border bg-white/80 p-4 backdrop-blur-md">
             <TerrainControls />
           </div>
-        </div>
+        </aside>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-4 border-t border-sage-border bg-cream-warm px-4 py-3 text-sm">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-4 rounded-2xl border border-sage-border bg-cream-warm px-4 py-3 text-sm">
         <Link
           href="/prototype"
           className="text-forest underline-offset-2 hover:underline"

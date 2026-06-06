@@ -14,7 +14,7 @@ export function MetricsHUD() {
   ];
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="grid grid-cols-2 gap-2">
       {metrics.map((m) => (
         <div
           key={m.label}

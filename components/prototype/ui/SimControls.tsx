@@ -75,15 +75,13 @@ export function SimControls({ className }: SimControlsProps) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 rounded-2xl border border-sage-border bg-white/80 p-4 backdrop-blur-md md:flex-row md:items-center md:justify-center",
+        "flex flex-col gap-4 rounded-2xl border border-sage-border bg-white/80 p-4",
         className
       )}
     >
       <PlantPicker />
 
-      <div className="hidden h-10 w-px bg-sage-border md:block" />
-
-      <div className="flex flex-wrap justify-center gap-2">
+      <div className="flex flex-wrap gap-2">
         <GuidedTourButton />
         {buttons.map(({ label, icon: Icon, onClick, variant, disabled, active }) => (
           <button
