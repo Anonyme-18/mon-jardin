@@ -92,7 +92,7 @@ export function estimatePlantCount(): number {
 }
 
 export function estimateYieldKg(): number {
-  return Math.round(TOTAL_UNITS * 12 * 0.15);
+  return Math.round(TOTAL_UNITS * 12 * 0.15 * 4);
 }
 
 /** @deprecated use getUnitPosition */
@@ -102,3 +102,7 @@ export function getRowX(index: number): number {
 
 export const SEGMENTS_PER_ROW = MODULES_PER_ROW;
 export const TIERS = GRID_ROWS;
+
+export const TOTAL_KITS = TOTAL_UNITS;
+export const GREENHOUSE_AREA = 768;
+export const GREENHOUSE_CYCLE_REDUCTION = 0.12;

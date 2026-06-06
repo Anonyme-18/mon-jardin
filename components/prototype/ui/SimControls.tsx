@@ -7,9 +7,12 @@ import {
   Wheat,
   RotateCcw,
   Radio,
+  Fence,
 } from "lucide-react";
+import Link from "next/link";
 import { useSimulation } from "../hooks/useSimulation";
 import { PlantPicker } from "./PlantPicker";
+import { GuidedTourButton } from "./GuidedTourOverlay";
 import { cn } from "@/lib/utils";
 
 interface SimControlsProps {
@@ -81,6 +84,7 @@ export function SimControls({ className }: SimControlsProps) {
       <div className="hidden h-10 w-px bg-sage-border md:block" />
 
       <div className="flex flex-wrap justify-center gap-2">
+        <GuidedTourButton />
         {buttons.map(({ label, icon: Icon, onClick, variant, disabled, active }) => (
           <button
             key={label}
@@ -106,6 +110,13 @@ export function SimControls({ className }: SimControlsProps) {
             {label}
           </button>
         ))}
+        <Link
+          href="/services/clotures"
+          className="inline-flex items-center gap-2 rounded-full border-2 border-dashed border-forest/40 bg-white/60 px-4 py-2 text-sm font-medium text-forest transition-all hover:border-forest hover:bg-sage"
+        >
+          <Fence className="h-4 w-4" />
+          Pas de mur ?
+        </Link>
       </div>
     </div>
   );

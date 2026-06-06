@@ -6,6 +6,7 @@ import {
   TERRAIN_SENSORS,
   GREENHOUSE_SENSORS,
 } from "@/lib/sensorData";
+import { GREENHOUSE_CYCLE_REDUCTION } from "@/lib/terrainData";
 import { useTerrainSimulation } from "../hooks/useTerrainSimulation";
 
 export function TerrainSensors() {
@@ -22,11 +23,19 @@ export function TerrainSensors() {
     [showGreenhouse]
   );
 
+  const ghHumidityBoost =
+    showGreenhouse && showSensors ? 15 : showGreenhouse ? 10 : 0;
+
   return (
     <SensorNodes
       sensors={sensors}
       active={showSensors}
-      context={{ water: waterLevel, day }}
+      context={{
+        water: waterLevel,
+        day,
+        ghHumidityBoost,
+        ghCycleReduction: showGreenhouse ? GREENHOUSE_CYCLE_REDUCTION : 0,
+      }}
       htmlDistanceFactor={45}
       nodeScale={0.35}
     />

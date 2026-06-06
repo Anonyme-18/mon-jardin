@@ -10,6 +10,10 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { useTerrainSimulation } from "./hooks/useTerrainSimulation";
 import { TerrainMetricsHUD, TerrainControls } from "./ui/TerrainUI";
+import {
+  TerrainStatsBanner,
+  GreenhouseEffectBadge,
+} from "./ui/TerrainStatsBanner";
 
 const SceneTerrain3D = dynamic(() => import("./SceneTerrain3D"), { ssr: false });
 
@@ -29,7 +33,17 @@ export function PrototypeTerrainHectare3D() {
   const isIrrigating = useTerrainSimulation((s) => s.isIrrigating);
   const showSensors = useTerrainSimulation((s) => s.showSensors);
   const showGreenhouse = useTerrainSimulation((s) => s.showGreenhouse);
+  const showHeatmap = useTerrainSimulation((s) => s.showHeatmap);
+  const droneMode = useTerrainSimulation((s) => s.droneMode);
   const [hovering, setHovering] = useState(false);
+
+  const alwaysRender =
+    isIrrigating ||
+    showSensors ||
+    showGreenhouse ||
+    showHeatmap ||
+    droneMode ||
+    hovering;
 
   return (
     <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-sage-border ring-1 ring-sage-border">
@@ -42,11 +56,7 @@ export function PrototypeTerrainHectare3D() {
           shadows
           dpr={[1, 1.5]}
           camera={{ fov: 45, position: [120, 90, 120], near: 0.1, far: 500 }}
-          frameloop={
-            isIrrigating || showSensors || showGreenhouse || hovering
-              ? "always"
-              : "demand"
-          }
+          frameloop={alwaysRender ? "always" : "demand"}
           gl={{ antialias: true }}
           onCreated={({ gl }) => {
             gl.shadowMap.enabled = true;
@@ -65,7 +75,14 @@ export function PrototypeTerrainHectare3D() {
                 Mon Jardin — Terrain 1 hectare
               </p>
             </div>
-            <Badge variant="amber">Vue aérienne 3D</Badge>
+            <Badge variant="amber">
+              {droneMode ? "Mode drone" : "Vue aérienne 3D"}
+            </Badge>
+            <GreenhouseEffectBadge />
+          </div>
+
+          <div className="absolute left-1/2 top-4 -translate-x-1/2">
+            <TerrainStatsBanner />
           </div>
 
           <div className="absolute right-4 top-4 max-w-[220px]">

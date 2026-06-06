@@ -2,10 +2,10 @@
 
 import { useRef, useEffect, useMemo } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { getSlotPosition, TOTAL_SLOTS } from "@/lib/plantData";
 import { useSimulation } from "./hooks/useSimulation";
+import { CameraRig } from "./shared/CameraRig";
 import { GroundMesh } from "./models/GroundMesh";
 import { WallMesh } from "./models/WallMesh";
 import { BambooFrame } from "./models/BambooFrame";
@@ -16,6 +16,7 @@ import { CompostBox } from "./models/CompostBox";
 import { PotSlot } from "./models/PotSlot";
 import { HarvestBurst } from "./models/HarvestBurst";
 import { HomeSensors } from "./models/HomeSensors";
+import { PhotoBackdrop } from "./models/PhotoBackdrop";
 
 const FINAL_CAMERA: [number, number, number] = [3.5, 2.5, 5.0];
 const INTRO_CAMERA: [number, number, number] = [8, 4, 8];
@@ -23,22 +24,28 @@ const LOOK_AT = new THREE.Vector3(0, 1.2, 0);
 
 function SceneEnvironment() {
   const { scene } = useThree();
+  const season = useSimulation((s) => s.season);
+  const guidedTourActive = useSimulation((s) => s.guidedTourActive);
 
   useEffect(() => {
-    scene.background = new THREE.Color("#B8DCF0");
-    scene.fog = new THREE.FogExp2("#F7F4EF", 0.06);
-  }, [scene]);
+    const sky = season === "dry" ? "#B8DCF0" : "#9ECAE8";
+    const fog = season === "dry" ? "#F7F4EF" : "#E8F4FC";
+    scene.background = new THREE.Color(sky);
+    scene.fog = new THREE.FogExp2(fog, guidedTourActive ? 0.04 : 0.06);
+  }, [scene, season, guidedTourActive]);
 
   return null;
 }
 
 function CameraIntro() {
   const { camera } = useThree();
+  const guidedTourActive = useSimulation((s) => s.guidedTourActive);
+  const cameraOverride = useSimulation((s) => s.cameraOverride);
   const progress = useRef(0);
   const done = useRef(false);
 
   useFrame((_, delta) => {
-    if (done.current) return;
+    if (done.current || guidedTourActive || cameraOverride) return;
     progress.current = Math.min(1, progress.current + delta / 2.5);
 
     const t = 1 - Math.pow(1 - progress.current, 3);
@@ -74,13 +81,9 @@ function IrrigationLights() {
   );
 }
 
-function LevaDebug() {
-  if (process.env.NODE_ENV === "production") return null;
-  return null;
-}
-
 export default function Scene3D() {
-  const isWatering = useSimulation((s) => s.isWatering);
+  const cameraOverride = useSimulation((s) => s.cameraOverride);
+  const orbitEnabled = useSimulation((s) => s.orbitEnabled);
   const slotPositions = useMemo(
     () =>
       Array.from({ length: TOTAL_SLOTS }, (_, i) => ({
@@ -108,6 +111,7 @@ export default function Scene3D() {
         shadow-camera-bottom={-5}
       />
 
+      <PhotoBackdrop />
       <GroundMesh />
       <WallMesh />
       <BambooFrame />
@@ -123,17 +127,13 @@ export default function Scene3D() {
         <PotSlot key={id} id={id} position={position} />
       ))}
 
-      <OrbitControls
-        enablePan={false}
+      <CameraRig
+        cameraOverride={cameraOverride}
+        orbitEnabled={orbitEnabled}
+        lookAtDefault={LOOK_AT}
         minDistance={3}
         maxDistance={9}
-        minPolarAngle={0.3}
-        maxPolarAngle={1.4}
-        autoRotate={false}
-        target={LOOK_AT}
       />
-
-      <LevaDebug />
     </>
   );
 }

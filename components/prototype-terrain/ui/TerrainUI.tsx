@@ -1,6 +1,15 @@
 "use client";
 
-import { Droplets, FastForward, Eye, RotateCcw, Radio, Warehouse } from "lucide-react";
+import {
+  Droplets,
+  FastForward,
+  Eye,
+  RotateCcw,
+  Radio,
+  Warehouse,
+  Plane,
+  Map,
+} from "lucide-react";
 import { useTerrainSimulation, useTerrainMetrics } from "../hooks/useTerrainSimulation";
 import { cn } from "@/lib/utils";
 
@@ -46,8 +55,12 @@ export function TerrainControls() {
   const isIrrigating = useTerrainSimulation((s) => s.isIrrigating);
   const showSensors = useTerrainSimulation((s) => s.showSensors);
   const showGreenhouse = useTerrainSimulation((s) => s.showGreenhouse);
+  const showHeatmap = useTerrainSimulation((s) => s.showHeatmap);
+  const droneMode = useTerrainSimulation((s) => s.droneMode);
   const toggleSensors = useTerrainSimulation((s) => s.toggleSensors);
   const toggleGreenhouse = useTerrainSimulation((s) => s.toggleGreenhouse);
+  const toggleHeatmap = useTerrainSimulation((s) => s.toggleHeatmap);
+  const toggleDroneMode = useTerrainSimulation((s) => s.toggleDroneMode);
 
   const buttons = [
     {
@@ -62,6 +75,20 @@ export function TerrainControls() {
       icon: FastForward,
       onClick: advanceDay,
       variant: "secondary" as const,
+    },
+    {
+      label: "Drone",
+      icon: Plane,
+      onClick: toggleDroneMode,
+      variant: droneMode ? ("amber" as const) : ("secondary" as const),
+      active: droneMode,
+    },
+    {
+      label: "Heatmap",
+      icon: Map,
+      onClick: toggleHeatmap,
+      variant: showHeatmap ? ("amber" as const) : ("secondary" as const),
+      active: showHeatmap,
     },
     {
       label: "Annotations",

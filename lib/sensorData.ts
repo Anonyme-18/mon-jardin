@@ -24,7 +24,7 @@ export const HOME_SENSORS: SensorReading[] = [
     kind: "humidity",
     position: [0, 1.2, -0.35],
     unit: "%",
-    getValue: (ctx) => String(Math.round(55 + (ctx.water ?? 0) * 0.35)),
+    getValue: (ctx) => String(Math.round(55 + (ctx.water ?? 0) * 0.35 + (ctx.seasonRain ?? 0))),
   },
   {
     id: "s-temp",
@@ -110,7 +110,8 @@ export const GREENHOUSE_SENSORS: SensorReading[] = [
     kind: "temperature",
     position: [28, 2.5, 28],
     unit: "°C",
-    getValue: () => "34",
+    getValue: (ctx) =>
+      String(Math.round(34 - (ctx.ghCycleReduction ?? 0) * 8)),
   },
   {
     id: "gh-humidity",
@@ -118,7 +119,8 @@ export const GREENHOUSE_SENSORS: SensorReading[] = [
     kind: "humidity",
     position: [32, 2, 32],
     unit: "%",
-    getValue: () => "72",
+    getValue: (ctx) =>
+      String(Math.round(58 + (ctx.ghHumidityBoost ?? 0))),
   },
 ];
 

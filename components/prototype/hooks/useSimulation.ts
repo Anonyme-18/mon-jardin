@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 import {
   PLANTS,
@@ -6,6 +8,7 @@ import {
   getGrowthProgress,
   FCFA_PER_KG,
 } from "@/lib/plantData";
+import type { LoméSeason } from "@/lib/prototypeEnhancements";
 
 export type SimPhase = "idle" | "growing" | "ready" | "harvested";
 
@@ -14,6 +17,11 @@ export interface SlotState {
   occupied: boolean;
   plantType: PlantType | null;
   plantedDay: number | null;
+}
+
+export interface CameraOverride {
+  position: [number, number, number];
+  lookAt: [number, number, number];
 }
 
 interface SimState {
@@ -28,6 +36,11 @@ interface SimState {
   logMessage: string;
   showHarvestBurst: boolean;
   showSensors: boolean;
+  season: LoméSeason;
+  guidedTourActive: boolean;
+  guidedTourStep: number;
+  cameraOverride: CameraOverride | null;
+  orbitEnabled: boolean;
 }
 
 interface SimActions {
@@ -41,6 +54,12 @@ interface SimActions {
   clearHarvestBurst: () => void;
   tickWatering: () => void;
   toggleSensors: () => void;
+  toggleSeason: () => void;
+  startGuidedTour: () => void;
+  stopGuidedTour: () => void;
+  setGuidedTourStep: (step: number) => void;
+  setCameraOverride: (cam: CameraOverride | null) => void;
+  setOrbitEnabled: (enabled: boolean) => void;
 }
 
 function createInitialSlots(): SlotState[] {
@@ -83,6 +102,11 @@ function getMaxCycleTotal(slots: SlotState[]): number {
   return max;
 }
 
+function waterDeltaForDays(n: number, season: LoméSeason): number {
+  const perDay = season === "dry" ? 4 : -1;
+  return n * perDay;
+}
+
 export const useSimulation = create<SimState & SimActions>((set, get) => ({
   day: 0,
   water: 80,
@@ -95,6 +119,11 @@ export const useSimulation = create<SimState & SimActions>((set, get) => ({
   logMessage: "Prototype prêt — sélectionnez une plante et cliquez sur un pot.",
   showHarvestBurst: false,
   showSensors: false,
+  season: "dry",
+  guidedTourActive: false,
+  guidedTourStep: 0,
+  cameraOverride: null,
+  orbitEnabled: true,
 
   setSelectedPlant: (plant) => set({ selectedPlant: plant }),
 
@@ -155,16 +184,25 @@ export const useSimulation = create<SimState & SimActions>((set, get) => ({
   },
 
   advanceDays: (n) => {
-    const { day, water, slots } = get();
+    const { day, water, slots, season } = get();
     const newDay = day + n;
-    const newWater = Math.max(0, water - n * 3);
+    const delta = waterDeltaForDays(n, season);
+    const newWater =
+      season === "rainy"
+        ? Math.min(100, water - delta)
+        : Math.max(0, water - delta);
     const phase = computePhase(slots, newDay);
+
+    const seasonNote =
+      season === "dry"
+        ? " Saison sèche — évaporation accélérée."
+        : " Saison des pluies — réservoir alimenté.";
 
     set({
       day: newDay,
       water: newWater,
       phase,
-      logMessage: `+${n} jour${n > 1 ? "s" : ""} — réservoir à ${Math.round(newWater)}%.`,
+      logMessage: `+${n} jour${n > 1 ? "s" : ""} — réservoir à ${Math.round(newWater)}%.${seasonNote}`,
     });
   },
 
@@ -214,6 +252,11 @@ export const useSimulation = create<SimState & SimActions>((set, get) => ({
       phase: "idle",
       showHarvestBurst: false,
       showSensors: false,
+      season: "dry",
+      guidedTourActive: false,
+      guidedTourStep: 0,
+      cameraOverride: null,
+      orbitEnabled: true,
       logMessage: "Simulation réinitialisée.",
     });
   },
@@ -229,10 +272,42 @@ export const useSimulation = create<SimState & SimActions>((set, get) => ({
         ? "Capteurs désactivés."
         : "Capteurs IoT activés — données en temps réel (simulation).",
     })),
+
+  toggleSeason: () =>
+    set((s) => ({
+      season: s.season === "dry" ? "rainy" : "dry",
+      logMessage:
+        s.season === "dry"
+          ? "Saison des pluies — humidité Lomé élevée, réservoir alimenté."
+          : "Saison sèche — surveillez le réservoir et les capteurs.",
+    })),
+
+  startGuidedTour: () =>
+    set({
+      guidedTourActive: true,
+      guidedTourStep: 0,
+      orbitEnabled: false,
+      logMessage: "Visite guidée — suivez les étapes sur l'écran.",
+    }),
+
+  stopGuidedTour: () =>
+    set({
+      guidedTourActive: false,
+      guidedTourStep: 0,
+      cameraOverride: null,
+      orbitEnabled: true,
+      logMessage: "Visite guidée terminée — explorez librement.",
+    }),
+
+  setGuidedTourStep: (step) => set({ guidedTourStep: step }),
+
+  setCameraOverride: (cam) => set({ cameraOverride: cam }),
+
+  setOrbitEnabled: (enabled) => set({ orbitEnabled: enabled }),
 }));
 
 export function useSimMetrics() {
-  const { day, water, slots, totalHarvested } = useSimulation();
+  const { day, water, slots, totalHarvested, season } = useSimulation();
 
   const activePlants = slots.filter((s) => s.occupied).length;
   let estimatedKg = 0;
@@ -253,6 +328,7 @@ export function useSimMetrics() {
   return {
     activePlants,
     water: Math.round(water),
+    humidityEstimate: Math.round(water * 0.6 + (season === "rainy" ? 25 : 0)),
     estimatedKg: estimatedKg.toFixed(1),
     economyFcfa,
     currentDay,

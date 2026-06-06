@@ -2,10 +2,15 @@
 
 import { useRef, useEffect } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html } from "@react-three/drei";
+import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { COLORS, ROW_GAP, HECTARE_SIZE } from "@/lib/terrainData";
 import { useTerrainSimulation } from "./hooks/useTerrainSimulation";
+import { CameraRig } from "@/components/prototype/shared/CameraRig";
+import {
+  DroneCameraController,
+  IrrigationTick,
+} from "./DroneCameraController";
 import { TerrainGround } from "./models/TerrainGround";
 import { TerrainFarmGrid } from "./models/TerrainFarmGrid";
 import { CentralIrrigationTank } from "./models/CentralIrrigationTank";
@@ -14,6 +19,7 @@ import { TerrainWaterSpray } from "./models/TerrainWaterSpray";
 import { HorizonTrees, FieldBoundaryMarkers } from "./models/HorizonTrees";
 import { Greenhouse } from "./models/Greenhouse";
 import { TerrainSensors } from "./models/TerrainSensors";
+import { ProductionHeatmap } from "./models/ProductionHeatmap";
 
 const FINAL_CAMERA: [number, number, number] = [55, 42, 65];
 const INTRO_CAMERA: [number, number, number] = [120, 90, 120];
@@ -21,22 +27,24 @@ const LOOK_AT = new THREE.Vector3(0, 0, 0);
 
 function SceneEnvironment() {
   const { scene } = useThree();
+  const showHeatmap = useTerrainSimulation((s) => s.showHeatmap);
 
   useEffect(() => {
-    scene.background = new THREE.Color(COLORS.sky);
-    scene.fog = new THREE.FogExp2(COLORS.fog, 0.008);
-  }, [scene]);
+    scene.background = new THREE.Color(showHeatmap ? "#7CB87C" : COLORS.sky);
+    scene.fog = new THREE.FogExp2(showHeatmap ? "#C8E6C8" : COLORS.fog, 0.008);
+  }, [scene, showHeatmap]);
 
   return null;
 }
 
 function CameraIntro() {
   const { camera } = useThree();
+  const droneMode = useTerrainSimulation((s) => s.droneMode);
   const progress = useRef(0);
   const done = useRef(false);
 
   useFrame((_, delta) => {
-    if (done.current) return;
+    if (done.current || droneMode) return;
     progress.current = Math.min(1, progress.current + delta / 3);
 
     const t = 1 - Math.pow(1 - progress.current, 3);
@@ -100,12 +108,16 @@ function IrrigationGlow() {
 }
 
 export default function SceneTerrain3D() {
-  const isIrrigating = useTerrainSimulation((s) => s.isIrrigating);
+  const orbitEnabled = useTerrainSimulation((s) => s.orbitEnabled);
+  const droneMode = useTerrainSimulation((s) => s.droneMode);
+  const cameraOverride = useTerrainSimulation((s) => s.cameraOverride);
 
   return (
     <>
       <SceneEnvironment />
       <CameraIntro />
+      <DroneCameraController />
+      <IrrigationTick />
 
       <ambientLight intensity={0.55} color="#FFF8E7" />
       <directionalLight
@@ -122,6 +134,7 @@ export default function SceneTerrain3D() {
       <hemisphereLight args={["#87CEEB", COLORS.soil, 0.35]} />
 
       <TerrainGround />
+      <ProductionHeatmap />
       <TerrainFarmGrid />
       <CentralIrrigationTank />
       <IrrigationNetwork />
@@ -133,14 +146,13 @@ export default function SceneTerrain3D() {
       <FieldLabels />
       <IrrigationGlow />
 
-      <OrbitControls
-        enablePan
+      <CameraRig
+        cameraOverride={cameraOverride}
+        orbitEnabled={orbitEnabled && !droneMode}
+        lookAtDefault={LOOK_AT}
         minDistance={8}
         maxDistance={120}
-        minPolarAngle={0.2}
-        maxPolarAngle={Math.PI / 2.1}
-        autoRotate={false}
-        target={LOOK_AT}
+        enablePan
       />
     </>
   );
