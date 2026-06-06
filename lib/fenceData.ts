@@ -1,6 +1,16 @@
 import type { FenceListing } from "./types";
 
 export const FENCE_LISTINGS_KEY = "mon-jardin-fence-listings";
+export const FENCE_OWNER_KEY = "mon-jardin-fence-owner";
+export const FENCE_MY_LISTINGS_KEY = "mon-jardin-fence-my-ids";
+export const FENCE_ROLE_KEY = "mon-jardin-fence-role";
+
+export type FenceMarketplaceRole = "client" | "bailleur";
+
+export interface FenceOwnerProfile {
+  name: string;
+  phone: string;
+}
 
 export const defaultFenceListings: FenceListing[] = [
   {
@@ -65,30 +75,103 @@ export const defaultFenceListings: FenceListing[] = [
   },
 ];
 
+function readCustomListings(): FenceListing[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem(FENCE_LISTINGS_KEY);
+    return stored ? (JSON.parse(stored) as FenceListing[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeCustomListings(listings: FenceListing[]): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(FENCE_LISTINGS_KEY, JSON.stringify(listings));
+}
+
 export function loadFenceListings(): FenceListing[] {
   if (typeof window === "undefined") return defaultFenceListings;
 
-  try {
-    const stored = localStorage.getItem(FENCE_LISTINGS_KEY);
-    if (!stored) return defaultFenceListings;
-
-    const custom = JSON.parse(stored) as FenceListing[];
-    const defaultIds = new Set(defaultFenceListings.map((l) => l.id));
-    const merged = [
-      ...defaultFenceListings,
-      ...custom.filter((l) => !defaultIds.has(l.id)),
-    ];
-    return merged;
-  } catch {
-    return defaultFenceListings;
-  }
+  const custom = readCustomListings();
+  const defaultIds = new Set(defaultFenceListings.map((l) => l.id));
+  return [
+    ...defaultFenceListings,
+    ...custom.filter((l) => !defaultIds.has(l.id)),
+  ];
 }
 
 export function saveCustomFenceListing(listing: FenceListing): void {
   if (typeof window === "undefined") return;
 
-  const stored = localStorage.getItem(FENCE_LISTINGS_KEY);
-  const custom: FenceListing[] = stored ? JSON.parse(stored) : [];
+  const custom = readCustomListings();
   custom.push(listing);
-  localStorage.setItem(FENCE_LISTINGS_KEY, JSON.stringify(custom));
+  writeCustomListings(custom);
+}
+
+export function saveOwnerProfile(profile: FenceOwnerProfile): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(FENCE_OWNER_KEY, JSON.stringify(profile));
+}
+
+export function loadOwnerProfile(): FenceOwnerProfile | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(FENCE_OWNER_KEY);
+    return raw ? (JSON.parse(raw) as FenceOwnerProfile) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function addMyListingId(id: string): void {
+  if (typeof window === "undefined") return;
+  const ids = loadMyListingIds();
+  if (!ids.includes(id)) {
+    localStorage.setItem(
+      FENCE_MY_LISTINGS_KEY,
+      JSON.stringify([...ids, id])
+    );
+  }
+}
+
+export function loadMyListingIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(FENCE_MY_LISTINGS_KEY);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function getMyListings(all: FenceListing[]): FenceListing[] {
+  const ids = new Set(loadMyListingIds());
+  return all.filter((l) => ids.has(l.id));
+}
+
+export function updateCustomListing(
+  id: string,
+  patch: Partial<FenceListing>
+): boolean {
+  if (typeof window === "undefined") return false;
+
+  const custom = readCustomListings();
+  const index = custom.findIndex((l) => l.id === id);
+  if (index === -1) return false;
+
+  custom[index] = { ...custom[index], ...patch };
+  writeCustomListings(custom);
+  return true;
+}
+
+export function saveFenceRole(role: FenceMarketplaceRole): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(FENCE_ROLE_KEY, role);
+}
+
+export function loadFenceRole(): FenceMarketplaceRole {
+  if (typeof window === "undefined") return "client";
+  const role = localStorage.getItem(FENCE_ROLE_KEY);
+  return role === "bailleur" ? "bailleur" : "client";
 }

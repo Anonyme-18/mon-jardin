@@ -17,7 +17,7 @@ export default function CloturesPage() {
           <SectionTitle
             eyebrow="Service"
             title="Location de clôtures & murs"
-            subtitle="Pas de mur chez vous ? Louez une clôture. Vous en avez une ? Mettez-la à disposition et gagnez un revenu passif."
+            subtitle="Deux espaces : cultivateur (trouver un mur) ou bailleur (louer le vôtre). Basculez en un clic."
             align="left"
             className="mb-0"
           />
